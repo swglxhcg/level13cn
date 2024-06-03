@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<!--
+	Level 13
+	
+	A text-based science fiction adventure by Noora Routasuo.
+	Based on the Ash.js engine and inspired by several incremental/idle games.
+	
+	See changelog.json for version information.
+	-->
+	
+	<meta charset="utf-8" />
+	<title>Level 13</title>
+	<meta itemprop="description" name="description" property="og:description" content="A text-based science fiction adventure game.">
+	<meta itemprop="image" property="og:image" content="favicon.png" />
+	<meta itemprop="name" property="og:title" content="Level 13" />
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<link rel="shortcut icon" href="favicon.ico" />
+	<link rel="image_src" href="favicon.png" />
+	<link rel="stylesheet" type="text/css" href="css/normalize.css" />
+	<link rel="stylesheet" type="text/css" href="css/gridism.css" />
+	<link rel="stylesheet" type="text/css" href="css/main.css" />
+	<link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
+	<link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
+</head>
+
+<body class="wrap wider dark" style="height:100%">
+	
+	<div class="sticky-footer-wrapper">
+		<div class="grid" id="grid-main">
+			<div class="unit one-quarter" style="visibility:hidden; padding:1px; height:1px"></div><!-- filler for log -->
+			<div class="unit three-quarters" id="unit-main" style="display: none">
+
+				<div id="header-self-bar" class="lvl13-box-2">
+					<div id="notification-player" class="unit whole notification">
+						<div id="notification-player-bar" class="progress-wrap progress">
+							<div class="progress-bar progress"></div>
+							<span class="progress-label progress"></span>
+						</div>
+					</div>
+					<ul class="itemlist" id="list-items-perks"></ul>
+					<ul class="itemlist" id="list-items-statuses"></ul>
+					
+					<div id="stats-vision" class="stats-indicator">
+						<span class="label">视野</span>
+						<div class="stats-value-container"><span class="value">0</span><span id="vision-change-indicator" class="change-indicator"></span></div>
+					</div>
+					<div id="stats-health" class="stats-indicator">
+						<span class="label">健康度</span>
+						<div class="stats-value-container"><span class="value">0</span><span id="health-change-indicator" class="change-indicator"></span></div>
+					</div>
+					<div id="stats-stamina" class="stats-indicator">
+						<span class="label">耐力</span>
+						<div class="stats-value-container"><span class="value">0</span><span id="stamina-change-indicator" class="change-indicator"></span></div>
+					</div>
+					<div id="stats-scavenge" class="stats-indicator">
+						<span class="label">打扫<br/>效率</span>
+						<div class="stats-value-container"><span class="value">0</span><span id="scavenge-change-indicator" class="change-indicator"></span></div>
+					</div>
+					<div id="stats-scavenge-bonus" class="stats-indicator">
+						<span class="label">打扫<br/>额外好处</span>
+					</div>
+					
+					<hr/>
+					<div id="container-equipment-stats"></div>
+				</div>
+				
+				<div class="grid" id="grid-main-header">
+					<div class="unit whole lvl13-box-1 header-section" id="header-tribe-container">
+						<div id="statsbar-self" class="statsbar">
+							<div id="stats-evidence" class="stats-indicator">
+								<span class="label">证据</span>
+								<span class="value">0</span>
+								<span id="evidence-change-indicator" class="change-indicator"></span>
+							</div>
+							<div id="stats-rumours" class="stats-indicator">
+								<span class="label">传言</span>
+								<span class="value">0</span>
+								<span id="rumours-change-indicator" class="change-indicator"></span>
+							</div>
+							<span id="stats-favour" class="stats-indicator">
+								<span class="label">喜爱</span>
+								<span class="value">0</span>
+								<span id="favour-change-indicator" class="change-indicator"></span>
+							</span>
+							<span id="statsbar-deity" class="statsbar">
+								神: <span id="deity-name">名字</span>
+							</span>
+						</div>
+					</div>
+					
+				<div class="unit whole lvl13-box-1" id="header-camp-container">
+					
+					<div class="header-section" id="main-header-bag">
+						<div id="header-bag-storage" class="stats-indicator">
+							<span class="label">背包容量</span>
+							<span class="value">0</span>
+							/
+							<span class="value-total">0</span>
+						</div>
+						<div id="header-bag-currency" class="stats-indicator">
+							<span class="label">银币</span>
+							<span class="value">0</span>
+						</div>
+						<div id="bag-resources" class="statsbar"></div>
+					</div>
+					
+					<div class="header-section" id="main-header-equipment">
+						<ul class="itemlist" id="list-header-equipment"></ul>
+					</div>
+					
+					<div class="header-section" id="main-header-items">
+						<ul class="itemlist" id="list-header-followers"></ul>
+						<ul class="itemlist" id="list-header-items"></ul>
+					</div>
+						
+					<div class="header-section" id="main-header-camp">
+						<div class="header-section" style="width: 22%">
+						<div id="header-camp-storage" class="stats-indicator">
+							<span class="label">存储</span>
+							<span class="value">0</span>
+						</div>
+						<div id="header-camp-reputation" class="stats-indicator">
+							<span class="label">声望</span>
+							<span class="value">0</span>
+							<span id="reputation-change-indicator" class="change-indicator"></span>
+						</div>
+						<div id="header-camp-population" class="stats-indicator">
+							<span class="label">人口</span>
+							<span class="value">0</span>
+							<span id="population-change-indicator" class="change-indicator"></span>
+						</div>
+						<div id="header-camp-currency" class="stats-indicator">
+							<span class="label">银币</span>
+							<span class="value">0</span>
+						</div>
+						</div>
+						<div class="header-section" style="width: 75%; float: right;">
+						<div id="statsbar-resources" class="statsbar">
+						</div>
+						</div>
+					</div>
+						
+				</div>
+				</div><!-- grid for the whole stats bar -->
+				
+				<div class="grid">
+					<div id="grid-location-header" class="unit whole">
+						<img id="level-icon" />
+						<h3 id="in-game-date">Y783</h3>
+						<h1>营地</h1>
+					</div>
+				</div>
+				
+				<div class="grid grid-content" id="grid-switch">
+					<div id="switch" class="unit whole">
+						<ul class="tabs" id="switch-tabs">
+							<li id="switch-out"><span class="name vision-text">户外</span></li>
+							<li id="switch-embark"><span class="name vision-text">户外</span></li>
+							<li id="switch-in"><span class="name vision-text">营地</span></li>
+							<li id="switch-bag"><span class="name vision-text">包</span></li>
+							<li id="switch-followers"><span class="name vision-text">派对</span></li>
+							<li id="switch-map"><span class="name vision-text">地图</span></li>
+							<li id="switch-trade"><span class="name vision-text">交易</span></li>
+							<li id="switch-projects"><span class="name vision-text">计划</span></li>
+							<li id="switch-upgrades"><span class="name vision-text">升级</span></li>
+							<li id="switch-world"><span class="name vision-text">部落</span></li>
+						</ul>
+					</div>
+				</div><!-- grid for the switch -->
+				
+				<div class="grid grid-content" id="grid-switch-content">
+				
+					<div class="grid" id="grid-tab-header">
+						<div class="unit whole" id="tab-header">
+						<button id="btn-header-rename" class="context btn-meta tabelement tab-options" data-tab="switch-in" style="display:none">Rename</button>
+						<div class="tabelement" data-tab="switch-map" style="display:none;">
+							<select id="select-header-mapstyle" class="context tab-options"></select>
+							<select id="select-header-level" class="context tab-options"></select>
+						</div>
+						<h2>&nbsp;</h2>
+						</div>
+					</div><!-- grid for the header" -->
+			
+					<!-- vis for camp -->
+					<div class="grid tabelement" id="container-tab-vis-in" data-tab="switch-in">
+						<div class="unit whole" id="tab-vis-in">
+							<div id="tab-vis-in-container" class="vis-container canvas-container">
+								<canvas id="campvis" width="800" height="10" role="img" aria-label="camp view"></canvas>
+								<div id="vis-camp-layer-buildings" class="vis-camp-layer"></div>
+								<div id="vis-camp-info-overlay"><span>这里的信息</span></div>
+							</div>
+						</div>
+					</div>
+					
+					<!-- camp basic stuff: buildings & population -->
+					<div class="grid tabelement" id="container-tab-two-in" data-tab="switch-in" style="display:none">
+						<div class="unit golden-large">
+							<h3>建筑</h3>
+							<div id="in-improvements" class="actionbox">
+								<table>
+								</table>
+							</div>
+						</div>
+						<div class="unit unit golden-small">
+							<div id="in-population" class="infobox">
+								<h3>人口</h3>
+								<p style="display:none" id="in-population-status">空闲 / 患病</p>
+								<table class="full-width" id="in-assign-workers">
+								</table>
+								<p style="display:none" id="in-population-next">下一个工人:</p>
+								<div id="in-population-bar-next" class="progress-wrap progress">
+									<div class="progress-bar progress"></div>
+									<span class="progress progress-label"></span>
+								</div>
+								<span style="display: none; font-size: 85%" id="in-population-reputation">声望需求: </span>
+							</div>
+							<div id="in-occurrences" class="infobox">
+								<h3>事件</h3>
+								<div id="in-occurrences-trader" class="progress-wrap progress">
+									<div class="progress-bar progress"></div>
+									<span class="progress progress-label">交易者</span>
+								</div>
+								<div id="in-occurrences-recruit" class="progress-wrap progress">
+									<div class="progress-bar progress"></div>
+									<span class="progress progress-label">访问者</span>
+								</div>
+								<div id="in-occurrences-raid" class="progress-wrap progress warning" data-animation-length="50">
+									<div class="progress-bar progress"></div>
+									<span class="progress progress-label">突袭!</span>
+								</div>
+								<div id="in-occurrences-outgoing-caravans-container">
+								</div>
+								<p class="p-meta" id="in-occurrences-empty">营地里一切都很安静.</p>
+							</div>
+							<div id="in-demographics" class="infobox p-dense">
+								<h3>详细信息</h3>
+								<div id="in-demographics-general">
+									<p id="in-demographics-general-age">已建立: <span class="value">-</span></p>
+								</div>
+								<div id="in-demographics-raid">
+									<div class='info-callout-target'>
+										<p id="in-demographics-raid-danger">来自突袭的危险: <span class="value"></span></p>
+									</div><br/>
+									<div class='info-callout-target'>
+										<p id="in-demographics-raid-defence">营地防御力: <span class="value"></span></p>
+									</div>
+									<p id="in-demographics-raid-last">最后一次袭击: <span class="value"></span></p>
+								</div>
+								<div id="in-demographics-level">
+									<p id="in-demographics-trade-network">与其他营地贸易: <span class="value"></span></p>
+									<p id="in-demographics-level-population">人口密度水平: <span class="value"></span></p>
+									<p id="in-demographics-level-danger">突袭危险等级: <span class="value"></span></p>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<!-- "embark" page when leaving camp -->
+					<div class="grid tabelement" id="container-tab-enter-out" data-tab="switch-embark">
+						<div class="unit whole">
+							<p>在你离开之前一定要打包足够的补给.</p>
+							<div class="grid">
+								<div class="unit one-third" id="embark-resources-container">
+									<div class="subheader"><h3>资源</h3></div>
+									<table id="embark-resources">
+									</table>
+								</div>
+								<div class="unit two-thirds" id="embark-items-container">
+									<div class="subheader"><h3>项目</h3></div>
+									<table id="embark-items">
+									</table>
+								</div>
+							</div>
+							<p>
+							<div class="stats-indicator" id="embark-bag">
+								<span class="label">已选择</span>
+								<span class="value">0</span>
+								/
+								<span class="value-total">0</span>
+							</div>
+							</p>
+							<div class="actionbox">
+							<button class="action" id="in-action-leave" action="leave_camp">Go</button>
+							<span class="warning hidden" id="embark-warning"></span>
+							</div>
+						</div>
+					</div>
+					
+					<!-- level: minimap and header -->
+					<div class="grid tabelement" id="container-tab-two-out" data-tab="switch-out">
+						<div class="unit unit-compass" id="out-container-compass">
+							<div id="minimap-container" class="canvas-container" style="width: 208px; height: 208px">
+								<canvas id="minimap" width="208" height="208" role="img" aria-label="area map">
+								</canvas>
+							</div>
+							<span id="out-position-indicator" class="vision-text"></span>
+						</div>
+						<div class="unit unit-rest">
+							<h2 id="header-sector">区域首领</h2>
+							<div id="out-desc"></div>
+						</div>
+					</div>
+					
+					<div class="grid tabelement" id="container-tab-two-out-actions" data-tab="switch-out" style="display:none;">
+						<div class="unit unit-compass" id="out-container-compass-actions">
+						<h3>方位</h3>
+							<table id="table-out-actions-movement">
+								<tr>
+									<td><button class="action btn-icon action-move tabbutton" data-tab="switch-out" id="out-action-move-nw" action="move_sector_nw"><span>NW</span></button></td>
+									<td><button class="action btn-icon action-move tabbutton" data-tab="switch-out" id="out-action-move-north" action="move_sector_north"><span>N</span></button></td>
+									<td><button class="action btn-icon action-move tabbutton" data-tab="switch-out" id="out-action-move-ne" action="move_sector_ne"><span>NE</span></button></td>
+								</tr>
+								<tr>
+									<td><button class="action btn-icon action-move tabbutton" data-tab="switch-out" id="out-action-move-west" action="move_sector_west"><span>W</span></button></td>
+									<td></td>
+									<td><button class="action btn-icon action-move tabbutton" data-tab="switch-out" id="out-action-move-east" action="move_sector_east"><span>E</span></button></td>
+								</tr>
+								<tr>
+									<td><button class="action btn-icon action-move tabbutton" data-tab="switch-out" id="out-action-move-sw" action="move_sector_sw"><span>SW</span></button></td>
+									<td><button class="action btn-icon action-move tabbutton" data-tab="switch-out" id="out-action-move-south" action="move_sector_south"><span>S</span></button></td>
+									<td><button class="action btn-icon action-move tabbutton" data-tab="switch-out" id="out-action-move-se" action="move_sector_se"><span>SE</span></button></td>
+								</tr>
+							</table>
+							<div id="out-actions-movement" class="actionbox">
+							<button class="action action-location" data-tab="switch-out" id="out-action-enter" action="enter_camp">进入营地</button>
+							<button class="action btn-icon" data-tab="switch-out" id="out-action-move-up" action="move_level_up"><span>前进</span></button>
+							<button class="action btn-icon" data-tab="switch-out" id="out-action-move-down" action="move_level_down"><span>后退</span></button>
+							<button class="action btn-icon" data-tab="switch-out" id="out-action-move-camp" action="move_camp_level"><span>返回营地</span></button>
+							<p id="out-action-move-camp-details" class="p-meta button-detail-label">(2 个块)</p>
+							</div>
+						</div>
+						
+						<div class="unit unit-rest">
+							<div class="subheader" id="header-out-actions">
+								<h3>搜索</h3>
+							</div>
+							<div id="out-actions" class="actionbox">
+							<button class="action action-location tabbutton" data-tab="switch-out" id="out-action-sca" action="scavenge">打扫</button>
+							<button class="action action-location" id="out-action-scout" action="scout">寻找</button>
+							<button class="action action-location" id="out-action-investigate" action="investigate">调查</button>
+							<button class="action action-location" id="out-action-clear-workshop" action="clear_workshop">探查 工坊</button>
+							<button class="action action-location" id="out-action-use-spring" action="use_spring">自动补水装置</button>
+							<button class="action action-location btn-icon" id="out-action-nap" action="nap"><span>休息</span></button>
+							<button class="action action-location" id="out-action-wait" action="wait"><span>等待</span></button>
+							<button class="action action-location" id="out-action-despair" action="despair">绝望</button>
+							<span id="container-out-actions-movement-related">
+							</span>
+							</div>
+							
+							<div class="subheader" id="header-out-improvements">
+								<h3>建造</h3>
+							</div>
+							<div id="out-improvements" class="actionbox">
+								<table>
+								<tr id="out-improvements-collector-water">
+									<td><button class="action action-build action-location" action="build_out_collector_water" id="out-action-build-bucket">水桶</button></td>
+									<td><button class='action action-improve btn-glyph-big' id="out-action-improve-bucket" action="improve_out_collector_water">▲</button></td>
+									<td><button class="action action-use action-location btn-narrow" action="use_out_collector_water" id="out-action-use-bucket">收集全部</button></td>
+									<td><button class="action action-use action-location btn-compact" action="use_out_collector_water_one" id="out-action-use-bucket_one">1</button></td>
+									<td class="list-storage vision-text"></td>
+								</tr><tr id="out-improvements-collector-food">
+									<td><button class="action action-build action-location" action="build_out_collector_food" id="out-action-build-trap">陷阱</button></td>
+									<td><button class='action action-improve btn-glyph-big' id="out-action-improve-trap" action="improve_out_collector_food">▲</button></td>
+									<td><button class="action action-use action-location btn-narrow" action="use_out_collector_food" id="out-action-use-trap">收集全部</button></td>
+									<td><button class="action action-use action-location btn-compact" action="use_out_collector_food_one" id="out-action-use-trap_one">1</button></td>
+									<td class="list-storage vision-text"></td>
+								</tr><tr id="out-improvements-beacon">
+									<td><button class="action action-build action-location" action="build_out_beacon" id="out-action-build-beacon">灯塔</button></td>
+									<td class="list-amount vision-text">0</td>
+								</tr><tr id="out-improvements-camp">
+									<td><button class="action action-build action-location" action="build_out_camp" >营地</button></td>
+								</tr>
+								</table>
+							</div>
+							<div class="actionbox" id="out-locales">
+								<div class="subheader">
+									<h3>位置</h3>
+								</div>
+								<table id="table-out-actions-locales">
+								</table>
+							</div>
+						</div>
+					</div>
+					
+					<!-- bag main div: item list & crafting -->
+					<div class="grid tabelement" id="container-tab-two-bag" data-tab="switch-bag" style="display:none">
+						<div class="unit three-quarters">
+							<div class="subheader" id="header-bag-equipment"><h3>设备</h3></div>
+							<div class="infobox" id="container-equipment-slots">
+								<div id="item-slot-bag" class="item-slot item-slot-big lvl13-box-1"></div>
+								<div id="item-slot-light" class="item-slot item-slot-big lvl13-box-1"></div>
+								<div id="item-slot-weapon" class="item-slot item-slot-big lvl13-box-1"></div>
+								<div id="item-slot-clothing_over" class="item-slot item-slot-big lvl13-box-1"></div>
+								<div id="item-slot-clothing_upper" class="item-slot item-slot-big lvl13-box-1"></div>
+								<div id="item-slot-clothing_lower" class="item-slot item-slot-big lvl13-box-1"></div>
+								<div id="item-slot-clothing_head" class="item-slot item-slot-big lvl13-box-1"></div>
+								<div id="item-slot-clothing_hands" class="item-slot item-slot-big lvl13-box-1"></div>
+								<div id="item-slot-shoes" class="item-slot item-slot-big lvl13-box-1"></div>
+							</div>
+							<div class="subheader" id="header-bag-items"><h3>其他项目</h3></div>
+							<div class="infobox">
+								<ul id="bag-items" style="padding:0px; margin: 0px"></ul>
+								<p id="bag-items-empty" class="p-meta">什么都没有</p>
+							</div>
+						</div>
+						<div class="unit one-quarter">
+							<div class="subheader" id="header-self-use-items"><h3>使用</h3></div>
+							<div id="self-use-items" class="actionbox">
+								<table>
+								</table>
+							</div>
+							<div class="subheader"><h3>工艺</h3></div>
+							<input type="checkbox" class="checkbox" id="checkbox-crafting-show-obsolete" /><p class="checkbox-label" id="label-crafting-show-obsolete">显示丢弃</p>
+							<div id="self-craft" class="actionbox">
+							</div>
+						</div>
+					</div>
+					
+					<div class="grid tabelement" id="container-tab-two-followers" data-tab="switch-followers" style="display:none;">
+						<div class="unit whole">
+							<p id="followers-max" class="p-meta">追随者最大值</p>
+							
+							<div id="tab-followers-section-selected" class="unit-section">
+								<div class="subheader" id="header-party"><h3>探险队</h3></div>
+								<div class="infobox" id="container-party-slots">
+								</div>
+							</div>
+							
+							<div id="tab-followers-section-unselected" class="unit-section">
+								<div class="subheader" id="header-followers"><h3>其他追随者</h3></div>
+								<div class="infobox">
+									<ul id="list-followers" class="itemlist"></ul>
+									<p id="followers-empty" class="p-meta">这里什么都没有.</p>
+								</div>
+							</div>
+							
+							<div id="tab-followers-section-recruits" class="unit-section">
+								<div class="subheader" id="header-recruits"><h3>访客</h3></div>
+								<p id="recruits-empty-message">这里暂时没有访客.</p>
+								<div id="recruits-container" class="actionbox">
+									<table></table>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<div class="grid tabelement" id="container-tab-two-map" data-tab="switch-map" style="display:none">
+						<div class="unit whole">
+							<p id="map-completion-hint">在这一层仍然有还未探索的地方.</p>
+							<div id="mainmap-container-container">
+								<div id="mainmap-container" class="canvas-container lvl13-box-1">
+									<canvas id="mainmap" width="500" height="500" role="img" aria-label="level map"></canvas>
+									<div id="mainmap-overlay" class="canvas-overlay"></div>
+								</div>
+							</div>
+							<div id="mainmap-container-ascii">
+								<textarea rows="12" readonly></textarea>
+								<div id="mainmap-ascii-legend" class="lvl13-box-1"></div>
+							</div>
+							<div id="mainmap-sector-details" class="lvl13-box-1" style="margin: 5px; padding: 5px;">
+								<button id="btn-mainmap-sector-details-next" class="context btn-meta">下一个</button>
+								<button id="btn-mainmap-sector-details-previous" class="context btn-meta">前一个</button>
+								<button id="btn-mainmap-sector-details-camp" class="context btn-meta">营地</button>
+								<div id="mainmap-sector-details-content-empty">
+									<h3>区域详细信息</h3>
+									<p class="meta" id="mainmap-sector-details-empty-text-canvas">单击区域查看详细信息.</p>
+									<p class="meta" id="mainmap-sector-details-empty-text-ascii">单击区域查看详细信息.</p>
+								</div>
+								<div id="mainmap-sector-details-content">
+									<h3><span id="mainmap-sector-details-name">Sector</span> <span id="mainmap-sector-details-pos"/></h3>
+									<table class="spacious">
+										<tr><td>关注点:</td><td><span id="mainmap-sector-details-poi"></span></td></tr>
+										<tr><td>清理:</td><td><span id="mainmap-sector-details-res-sca"></span></td></tr>
+										<tr><td>收集者:</td><td><span id="mainmap-sector-details-res-col"></span></td></tr>
+										<tr><td>威胁:</td><td><span id="mainmap-sector-details-threats"></span></td></tr>
+										<tr><td>护航者:</td><td><span id="mainmap-sector-details-blockers"></span></td></tr>
+										<tr><td>环境:</td><td><span id="mainmap-sector-details-env"></span></td></tr>
+										<tr><td>距离:</td><td><span id="mainmap-sector-details-distance"></span></td></tr>
+									</table>
+								</div>
+								<div id="mainmap-sector-details-content-debug">
+									<button id="btn-cheat-teleport" class="meta">Teleport</button>
+									<span id="mainmap-sector-debug-text"></span>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<div class="grid tabelement" id="container-tab-trade" data-tab="switch-trade" style="display:none">
+						<div class="unit whole">
+							<div class="subheader"><h3>进入的商队</h3></div>
+							<p id="trade-caravans-incoming-empty-message">这里没有交易者.</p>
+							<div id="trade-caravans-incoming-container" class="actionbox">
+								<table></table>
+							</div>
+							<div class="subheader"><h3>交易对象</h3></div>
+							<p id="trade-caravans-outgoing-empty-message">目前还没有发现贸易伙伴.</p>
+							<div id="trade-caravans-outgoing-container" class="actionbox">
+								<table></table>
+							</div>
+							<p id="trade-caravans-outgoing-num">可用的商队:</p>
+						</div>
+					</div>
+					
+					<div class="grid tabelement" id="container-tab-two-projects" data-tab="switch-projects" style="display:none">
+						<div class="unit whole">
+							<div class="actionbox" id="container-in-improvements-colony">
+								<div class="subheader"><h3>殖民地项目</h3></div>
+								<div id="in-improvements-colony" class="actionbox">
+									<table class="fullwidth"></table>
+								</div>
+								<button id="in-action-launch" class="action" action="launch">出发</button>
+							</div>
+							<div class="infobox">
+								<div class="subheader"><h3 id="header-in-improvements-level">可用项目</h3></div>
+								<div id="in-improvements-level" class="actionbox">
+									<table class="fullwidth"></table>
+								</div>
+								<p id="in-improvements-level-empty-message">没有可用的建筑项目. 探索地图找到一些.</p>
+							</div>
+							<div id="container-in-improvements-level-hidden">
+								<button id="in-improvements-reset-hidden" class='btn-meta btn-meta-float'>复位</button>
+								<div class="subheader"><h3 id="header-in-improvements-level-hidden">隐藏的项目</h3></div>
+								<p id="in-improvements-hidden-message">没有可用的建筑项目.</p>
+							</div>
+							<div class="subheader"><h3 id="header-in-improvements-level-built">建筑项目</h3></div>
+							<div id="in-improvements-level-built" class="actionbox">
+								<table class="fullwidth"></table>
+							</div>
+						</div>
+					</div>
+					
+					<div class="grid tabelement" id="container-tab-two-blueprints" data-tab="switch-blueprints" style="display:none;">
+						<div class="unit whole">
+						</div>
+					</div>
+					
+					<div class="grid tabelement" id="container-tab-two-upgrades" data-tab="switch-upgrades" style="display: none;">
+						<div class="unit whole">
+							<div id="world-blueprints" class="actionbox">
+								<div class="subheader"><h3>蓝图</h3></div>
+								<table id="blueprints-list" class="fullwidth">
+								</table>
+							</div>
+							<div id="world-upgrades" class="actionbox">
+								<div class="subheader"><h3>可用升级</h3></div>
+								<table id="upgrades-list" class="fullwidth spacious">
+								</table>
+								<p id="world-upgrades-empty-message">目前没有可用的升级.</p>
+							</div>
+							<div id="world-upgrades-info" class="infobox">
+								<div class="subheader"><h3>全部升级</h3></div>
+								<p id="world-upgrades-count">已完成升级: 0</p>
+								<div class ="infobox">
+								<div id="researched-upgrades-vis-container" class="canvas-container lvl13-box-1">
+									<canvas id="researched-upgrades-vis" width="100" height="100" role="img" aria-label="technology tree"></canvas>
+									<div id="upgrades-vis-overlay" class="canvas-overlay"></div>
+								</div>
+								<div id="upgrade-details" class="lvl13-box-1" style="margin: 5px; padding: 5px;">
+									<div id="upgrade-details-content-empty">
+										<h4>升级详细信息</h4>
+										<p class="meta">点击升级查看详细信息.</p>
+									</div>
+									<div id="upgrade-details-content">
+									<span id="upgrade-details-status" class="status-badge">状态</span>
+										<h4 id="upgrade-details-name">升级名称</h4>
+										<p>
+											<span id="upgrade-details-desc">升级描述</span><br/>
+											<span id="upgrade-details-effect" class="p-meta">升级影响</span>
+										</p>
+									</div>
+								</div>
+								</div>
+							</div>
+						</div>
+					</div>
+			
+					<div class="grid tabelement" id="container-tab-two-world" data-tab="switch-world" style="display:none">
+						<div class="unit whole">
+							<div class="infobox">
+								<div class="subheader"><h3>消息</h3></div>
+								<p id="world-message">目前还没有其他营地的消息.</p>
+								<div class="subheader"><h3>营地概述</h3></div>
+								<table id="camp-overview" class="full-width dense">
+									<tr id="camp-overview-header" class="lvl13-box-1 header-mini">
+										<th class="th-text" colspan="2"></th>
+										<th class="th-number">人口</th>
+										<th class="th-number">声望</th>
+										<th class="th-number">突袭</th>
+										<th class="th-number">存储</th>
+										<th class="th-text">生产</th>
+										<th class="th-text">状态</th>
+										<th class="th-number"></th>
+										<th class="th-number"></th>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</div>
+			</div><!-- main switch content grid -->
+			
+			</div><!-- main unit: the whole 3/4 right of the log -->
+			
+			<div id="log" class="unit one-quarter limit-height">
+				<div id="log-overlay" class="lvl13-fade-down"></div>
+				<ul></ul>
+			</div>
+			
+		</div><!-- main grid -->
+	
+		<div class="grid sticky-footer-push"></div>
+		
+	</div><!-- sticky footer wrap -->
+	
+	<div class="grid sticky-footer">
+		<div class="unit one-quarter" style="visibility:hidden"></div>
+		<div class="unit three-quarters" id="footer">
+			<span id="game-version" class="p-meta"></span>
+			<span id="game-msg" class="p-meta"></span>
+			<ul id="game-options">
+				<li><button class="btn-meta" id="btn-more">更多</button>
+				<li><button class="btn-meta" id="btn-restart">重开</button></li>
+				<li><button class="btn-meta" id="btn-save">保存</button></li>
+			</ul>
+			<ul id="game-options-extended" style="display:none">
+				<li><button class="btn-meta" id="btn-info">信息</button></li>
+				<li><button class="btn-meta" id="btn-importexport">导入/导出</button></li>
+				<li><span>:</span></li>
+			</ul>
+		</div>
+	</div><!-- sticky footer -->
+						
+	<div id="fight-popup" class="popup fill-on-mobiles hidden-by-default popup-ingame" style="display:none">
+		<h3 id="fight-title"></h3>
+		<p id="fight-desc"></p>
+		<div class="infobox" id="fight-popup-enemy-info">
+			<div class="container-relative">
+				<p id="fight-popup-enemy-name" class="nomargin">敌人的名字和力量</p>
+				<div id="fight-damage-indictor-enemy" class="fight-damage-indicator">-5</div>
+				<div id="fight-status-indictor-enemy" class="fight-status-indicator">闪避</div>
+			</div>
+			<p id="fight-popup-enemy-stats" class="nomargin">敌人体力</p>
+			<p id="fight-popup-enemy-difficulty" class="nomargin">敌人困难</p>
+		</div>
+		<div id="fight-popup-bars">
+			<div class="progress-multibar-container progress centered">
+				<div id="fight-bar-enemy" class="progress-wrap progress">
+					<div class="progress-bar progress"></div>
+					<div class="progress-bar-change progress"></div>
+				</div>
+				<div id="fight-bar-enemy-shield" class="progress-wrap progress-wrap-science progress">
+					<div class="progress-bar progress"></div>
+					<div class="progress-bar-change progress"></div>
+				</div>
+			</div>
+			<div class="progress-multibar-container progress centered">
+				<div id="fight-bar-self" class="progress-wrap progress">
+					<div class="progress-bar progress"></div>
+					<div class="progress-bar-change progress"></div>
+				</div>
+				<div id="fight-bar-self-shield" class="progress-wrap progress-wrap-science progress">
+					<div class="progress-bar progress"></div>
+					<div class="progress-bar-change progress"></div>
+				</div>
+			</div>
+		</div>
+		<div class="infobox" id="fight-popup-self-info">
+			<div class="container-relative">
+				<p id="fight-popup-self-name" class="nomargin">玩家名字</p>
+				<div id="fight-damage-indictor-self" class="fight-damage-indicator">-5</div>
+				<div id="fight-status-indictor-self" class="fight-status-indicator">闪避</div>
+			</div>
+			<p id="fight-popup-self-stats" class="nomargin">玩家体力</p>
+			<span id="fight-popup-self-equipment"></span>
+		</div>
+		<div class="container-nomargin" id="fight-popup-items">
+			<ul class="itemlist" id="list-fight-items" style="margin-top: -10px;"></ul>
+			<span id="fight-popup-itemlist-separator">|</span>
+			<ul class="itemlist" id="list-fight-followers" style="margin-top: -10px;"></ul>
+		</div>
+		<div class="buttonbox" id="fight-buttons-infightactions"></div>
+		<div id="fight-popup-results"></div>
+		<div class="buttonbox" id="fight-buttons-main">
+			<button id="out-action-fight-cancel" class="action action-manual-trigger" action="flee">逃离</button>
+			<button id="out-action-fight-confirm" class="action" action="fight">战斗</button>
+			<button id="out-action-fight-close">离开</button>
+			<button id="out-action-fight-continue">继续</button>
+			<button id="out-action-fight-takeselected" class="action inventory-selection-ok" action="accept_inventory">继续</button>
+			<button id="out-action-fight-takeall" class='action inventory-selection-takeall' action='take_all'>拾取全部</button>
+		</div>
+	</div>
+	
+	<div id="incoming-caravan-popup" class="popup popup-wide fill-on-mobiles hidden-by-default popup-ingame" style="display:none">
+		<h3>交易者</h3>
+		<p id="incoming-caravan-popup-markup"></p>
+		<div class="inventorybox" style="display:flex">
+			<div id="inventorylist-incoming-caravan-camp-inventory" class="inventorydivision" style="width: 170px">
+				<p class="inventorybox-header">营地库存</p>
+				<ul></ul>
+				<p class="msg-empty">(空)</p>
+			</div>
+			<div id="inventorylist-incoming-caravan-camp-offer" class="inventorydivision inventorydivision-with-footer highlightbox" style="width: 130px">
+				<p class="inventorybox-header">营地提供</p>
+				<ul></ul>
+				<p class="msg-empty">(空)</p>
+				<p class="value inventorybox-footer">0</span>
+			</div>
+			<div id="inventorylist-incoming-caravan-trader-offer" class="inventorydivision inventorydivision-with-footer highlightbox" style="width: 130px">
+				<p class="inventorybox-header">交易者提供</p>
+				<ul></ul>
+				<p class="msg-empty">(空)</p>
+				<p class="value inventorybox-footer">0</span>
+			</div>
+			<div id="inventorylist-incoming-caravan-trader-inventory" class="inventorydivision" style="width: 170px">
+				<p class="inventorybox-header">交易者库存</p>
+				<ul></ul>
+				<p class="msg-empty">(空)</p>
+			</div>
+		</div>
+		<div id="incoming-caravan-popup-multiplier"></div>
+		<div class="buttonbox" id="incoming-caravan-buttons-main">
+			<button id="incoming-caravan-popup-cancel">取消</button>
+			<button id="incoming-caravan-popup-reset">重置</button>
+			<button id="incoming-caravan-popup-confirm" class="action" action="trade_with_caravan">交易</button>
+		</div>
+	</div>
+	
+	<div id="manage-save-popup" class="popup fill-on-mobiles hidden-by-default popup-ingame" style="display:none">
+		<h3>导出/导入 保存</h3>
+		<p>导出/导入您的保存数据进行备份或继续在另一台计算机上游玩.<br/>请注意，游戏仍处于alpha阶段，更新可能会破坏旧的存档.</p>
+		<p>你的世界种子: <span id="save-seed">?</span><br>当前版本: <span id="save-version">?</span></p>
+		<div class="infobox">
+			<textarea id="manage-save-textarea" rows="5" cols="60"></textarea>
+		</div>
+		<p id="manage-save-warning" class="warning"></p>
+		<p id="manage-save-msg"></p>
+		<div class="buttonbox" id="load-import-container">
+			<button id="load-import">载入</button>
+		</div>
+		<div class="buttonbox">
+			<button id="open-export">导出</button>
+			<button id="open-import">导入</button>
+			<button id="close-manage-save-popup">关闭</button>
+		</div>
+	</div>
+	
+	<div id="common-popup" class="popup fill-on-mobiles hidden-by-default popup-ingame" style="display:none">
+		<h3></h3>
+		<p id="common-popup-desc"></p>
+		<p id="common-popup-input-container"><input class="text" autocomplete="false" autofocus="true"/></p>
+		<div id="info-results"></div>
+		<div class="buttonbox"></div>
+	</div>
+	
+	<div id="vision-overlay"></div>
+	
+	<div class="thinking-content">
+		<div class="loading-spinner">
+			<div class="loading-dot loading-dot1"></div>
+			<div class="loading-dot loading-dot2"></div>
+			<div class="loading-dot loading-dot3"></div>
+		</div>
+	</div>
+	
+	<div class="loading-content">
+		<div class="loading-spinner">
+			<div class="loading-dot loading-dot1"></div>
+			<div class="loading-dot loading-dot2"></div>
+			<div class="loading-dot loading-dot3"></div>
+		</div>
+	</div>
+	
+	<!-- Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-118652515-1"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+		gtag('config', 'UA-118652515-1', {
+			'app_name': 'Level13',
+			'custom_map': { 'dimension1': 'world_seed', 'dimension2': 'max_level', 'dimension3': 'max_camp' },
+		});
+	</script>
+
+	<!-- RequireJS -->
+	<script data-main="src/config" src="lib/requirejs/require.min.js"></script>
+
+</body>
+</html>
